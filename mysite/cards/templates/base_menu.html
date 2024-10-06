@@ -1,0 +1,39 @@
+{% extends "base_bootstrap.html" %}
+{% block navbar %}
+    {% load app_tags %}
+    <nav class="navbar navbar-default navbar-inverse">
+        <div class="container-fluid">
+            {#    <div class="navbar-header">#}
+            {#        <a class="navbar-brand" href="/">{{ settings.APP_NAME }}</a>#}
+            {#    </div>#}
+            <ul class="nav navbar-nav">
+                {% url 'cards:all' as cards %}
+                <li {% if request.get_full_path == cards %}class="active"{% endif %}>
+                    <a href="{% url 'cards:all' %}">Words</a></li>
+            </ul>
+            <ul class="nav navbar-nav center-nav">
+                {% url 'cards:meaning_list' as meaning_list %}
+                <li {% if request.get_full_path == meaning_list %} class="active"{% endif %}>
+                    <a href="{% url 'cards:meaning_list' %}" target="_blank">Meanings</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                    {% url 'cards:word_create' as word_create %}
+                    <li {% if request.get_full_path == word_create %} class="active"{% endif %}>
+                        <a href="{% url 'cards:word_create' %}">Create Word</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" data-toggle="dropdown" class="dropdown-toggle">Log in/out</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'logout' %}?next={% url 'cards:all' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{% url 'login' %}?next={% url 'cards:all' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+{% endblock %}

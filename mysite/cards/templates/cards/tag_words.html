@@ -1,0 +1,540 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_filters %}
+{% load humanize %}
+{% block content %}
+    <br>
+    <h1><span style="color: #008000; font-weight:bold">Group «{{ tag_name }}»</span></h1>
+
+
+
+    {% if user.is_authenticated %}
+        <p>
+            <a href="{% url 'cards:word_create' %}">Add a Word</a> |
+            <a href="{% url 'cards:tag_group_words' tag_name 'yes' first last field show %}">Mix up</a> |
+            <a href="{% url 'logout' %}?next={% url 'cards:all' %}">Logout</a>
+        </p>
+
+        <br><br>
+
+        <div style="width: 620px; background-color:#dbd7d2;">
+            <span style="font-weight:bold">Group name &emsp;&emsp;&emsp; Range &emsp;&emsp;&ensp;&nbsp; Mix up? &emsp;&emsp; Field &emsp;&emsp; Show</span>
+            <form action="http://localhost:8000/cards/tag_group_words/">
+                &ensp;
+                {% if word_groups %}
+                    <select name="tag_name">
+                        {% for group in word_groups %}
+                            <option value="{{ group.text }}">{{ group.text }}</option>
+                        {% endfor %}
+                    </select>
+                    &ensp;
+                    <input type="text" , value="1" , name="first" , size="2">
+                    -
+                    <input type="text" , value="10000" , name="last" , size="2">
+                    &ensp;
+                    <select name="mix_up">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                    &ensp;
+                    <select name="field" id="field">
+                        <option value="writing">Writing</option>
+                        <option value="old_writing">Old writing</option>
+                        <option value="transcription">Transcription</option>
+                        <option value="meanings">Meanings</option>
+                    </select>
+                    &ensp;
+                    <input type="text" , value="30" , name="show" , size="2">
+                    &ensp;
+                    <button type="submit" style="width: 40px; height: 23px;"><i class="fa fa-check"></i></button>
+                {% else %}
+                    <select name="None">
+                        <option value="None">There are no groups</option>
+                    </select>
+                {% endif %}
+            </form>
+            <br><br>
+            <span style="color: #ff5f0f;"><b>Delete group (choose a tag):</b></span>
+            <br><br>
+            <form method="post" action="{% url 'cards:tag_group_words' tag_name mix_up first last field show %}">
+                {% csrf_token %}
+                {% if word_groups %}
+                    <select name="delete_tag">
+                    {% for group in word_groups %}
+                        {% if group.text != "0" %}
+                            <option value="{{ group.text }}">{{ group.text }}</option>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </select>
+                &ensp;
+                <button type="submit" style="width: 40px; height: 23px;"><i class="fa fa-trash"></i></button>
+            </form>
+            <br><br>
+            <p>
+                <span style="color: #3396ff;"><b>Create group (enter a tag):</b></span>
+                <br><br>
+                {% load crispy_forms_tags %}
+            <form method="post" action="{% url 'cards:tag_group_words' tag_name mix_up first last field show %}">
+                {% csrf_token %}
+                {{ tag_add_form|crispy }}
+                <input type="submit" value="Submit">
+            </form>
+            </p>
+        </div>
+
+        <div id="box" style="width: 620px; background-color:#afeeee;">
+            {% for word_ in tag_group_words %}
+                {% if forloop.counter == 1 %}
+                    <span class="shown select">
+                {% else %}
+                    <span class="hidden select">
+                {% endif %}
+            <ul class="flex tabsmenu">
+    {% if field == "writing" %}
+        <li class="active">Writing</li>
+    {% else %}
+        <li>Writing</li>
+    {% endif %}
+                {% if field == "old_writing" %}
+                    <li class="active">Old writing</li>
+                {% else %}
+                    <li>Old writing</li>
+                {% endif %}
+                {% if field == "transcription" %}
+                    <li class="active">Transcription</li>
+                {% else %}
+                    <li>Transcription</li>
+                {% endif %}
+                {% if field == "meanings" %}
+                    <li class="active">Meanings</li>
+                {% else %}
+                    <li>Meanings</li>
+                {% endif %}
+</ul>
+            <div class="container" style="width: 620px; padding-right: 62px;">
+    {% if field == "writing" %}
+        <div class="talign"
+             style="vertical-align: middle; height: 270px; text-align: center; border: solid 2px #3b99fc; background-color:#ffffff;">
+    {% else %}
+        <div class="talign"
+             style="vertical-align: middle; height: 270px; text-align: center; border: solid 2px #3b99fc; background-color:#ffffff;"
+             hidden>
+    {% endif %}
+                <h3></h3>
+		<div><h2>{{ word_.writing }}</h2></div>
+                </div>
+                {% if field == "old_writing" %}
+                    <div class="talign"
+                         style="vertical-align: middle; height: 270px; text-align: center; border: solid 2px #3b99fc; background-color:#ffffff;">
+                {% else %}
+                    <div class="talign"
+                         style="vertical-align: middle; height: 270px; text-align: center; border: solid 2px #3b99fc; background-color:#ffffff;"
+                         hidden>
+                {% endif %}
+                <h3></h3>
+		<div><h2>{{ word_.old_writing }}</h2></div>
+                </div>
+                {% if field == "transcription" %}
+                    <div class="talign"
+                         style="vertical-align: middle; height: 270px; text-align: center; border: solid 2px #3b99fc; background-color:#ffffff;">
+                {% else %}
+                    <div class="talign"
+                         style="vertical-align: middle; height: 270px; text-align: center; border: solid 2px #3b99fc; background-color:#ffffff;"
+                         hidden>
+                {% endif %}
+                <h3></h3>
+		<div><h2>{{ word_.transcription }}</h2></div>
+                </div>
+                {% if field == "meanings" %}
+                    <div class="talign1"
+                         style="vertical-align: middle; overflow: auto; height: 270px; border: solid 2px #3b99fc; background-color:#ffffff;">
+                {% else %}
+                    <div class="talign1"
+                         style="vertical-align: middle; overflow: auto; height: 270px; border: solid 2px #3b99fc; background-color:#ffffff;"
+                         hidden>
+                {% endif %}
+                <h3></h3>
+		<div><h2>
+        <ul>
+        {% for meaning_ in word_.meanings.all %}
+            <li style=" font-size:40%">
+          -&emsp;<a href="{% url 'cards:meaning_detail' meaning_.id %}" target="_blank">{{ meaning_.text }}</a>
+                {% for obj in cross_table_objs %}
+                    {% if obj.word.id == word_.id and obj.meaning.id == meaning_.id and obj.comment_set.all %}
+                        <small><span style="font-style: italic;">
+                 {% for comment in obj.comment_set.all %}
+                     &emsp;({{ comment.text }})
+                 {% endfor %}
+                 </span></small>
+                    {% endif %}
+                {% endfor %}
+          </li>
+        {% endfor %}
+        </ul>
+        </h2></div>
+                </div>
+                <p style="text-align: center;">
+<a href="{% url 'cards:word_detail' word_.id %}" target="_blank"><i class="fa fa-pencil"></i></a>
+</p>
+<br>
+<p style="border-style: solid; border-color: black; border-width: 1px; width: 45px;
+         height: 20px; text-align: center; vertical-align: middle; margin: auto; background-color:#ffffff;">{{ forloop.counter }}</p>
+                </div>
+            </span>
+            </span>
+            {% endfor %}
+
+            <button onclick="setNewShown('start')">⏮</button>
+            <button onclick="setNewShown('up')" style="float:left">◀</button>
+            <button style="float:right" onclick="setNewShown('down')">▶</button>
+            <button style="float:right" onclick="setNewShown('end')">⏭</button>
+
+        </div>
+
+        <p>Check yourself - draw text here (click right button to erase):</p>
+        <div id="sketch" style="width:620px; height:300px; background-color:#fff5ee; padding: 0px;">
+            <canvas id="paint" oncontextmenu="erase(); return false"></canvas>
+            <img id="canvasimg" style="display:none;">
+        </div>
+
+    {% else %}
+        <div style="position: fixed; left: 395px; border: 0;">
+            <p>You are not authorized to see word lists.</p>
+            <a href="{% url 'login' %}?next={% url 'cards:all' %}">Login</a>
+        </div>
+    {% endif %}
+
+    <style>
+
+        /* Style for tabs with containers - Start */
+
+        /* reset */
+        html, body, div, h1, h2, h3, p {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            vertical-align: baseline;
+        }
+
+        *, :after, :before {
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        ol, ul {
+            list-style: none;
+            display: block;
+        }
+
+        .flex {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+        }
+
+        html, body, .wrap {
+            height: 100%;
+            line-height: 1;
+        }
+
+        .wrap {
+            width: 1024px;
+            position: relative;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+
+        /* typography */
+        body {
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 20px;
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+        }
+
+        h1 {
+            font-weight: 500;
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-weight: 500;
+            font-size: 50px;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            line-height: 20px;
+            color: #656565;
+            text-align: justify;
+        }
+
+        /* tabsmenu */
+        .tabsmenu {
+            margin-bottom: -1px;
+        }
+
+        .tabsmenu li {
+            border: solid 1px #3b99fc;
+            border-radius: 5px 5px 0 0;
+            width: 120px;
+            height: 50px;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            font-size: 15px;
+            color: #333;
+            -webkit-user-select: none;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .tabsmenu .active {
+            color: #fff;
+            background: #3b99fc;
+            border-radius: 5px 5px 0 0;
+            cursor: default;
+        }
+
+        .container > div {
+            margin-bottom: 50px;
+            padding: 20px;
+            border: solid 3px #3b99fc;
+            border-radius: 0 3px 3px 3px;
+        }
+
+        /* Style for tabs with containers - End */
+
+        /* buttons */
+        button {
+            font: 16px sans-serif;
+        }
+
+        button {
+            width: 64px;
+            height: 2em;
+        }
+
+    </style>
+
+    <script type="text/javascript">
+
+        /* Script for tabs with containers - Start */
+
+        /* tabs menu */
+        ;(function () {
+            'use strict';
+
+            class Tabsmenu {
+                constructor(tabmenu) {
+                    this.tabmenu = tabmenu;
+                    // блоки с контентом для табов
+                    this.blocks = this.tabmenu.nextElementSibling.querySelectorAll('.container > div');
+                    // коллекция табов
+                    this.tabs = this.tabmenu.querySelectorAll('li');
+                    // вешаем обработчик событий на родительский элемент табов
+                    this.tabmenu.addEventListener('click', this.swithTab.bind(this));
+                }
+
+                swithTab(e) {
+                    let target = e.target;
+                    // проверяем, по какому именно элементу таб меню был сделан клик
+                    // если клик был сделан не по вкладке, которая формируется тэгом &lt;li&gt;,
+                    // то прекращаем работу функции и переходим в ожидание следующего клика
+                    if (target.tagName !== 'LI') return;
+                    // индекс вкладки по которой был сделан клик
+                    const i = [].indexOf.call(this.tabs, target);
+                    // делаем вкладки неактивными
+                    for (let tab of this.tabs) {
+                        tab.classList.remove('active');
+                    }
+                    // делаем активной вкладку, по которой был сделан клик
+                    this.tabs[i].classList.add('active');
+                    this.switchBloks(i);
+                }
+
+                switchBloks(i) {
+                    // делаем все блоки с контентом невидимыми
+                    for (let block of this.blocks) {
+                        block.hidden = true;
+                    }
+                    // делаем видимым блок контента, относящийся к активной вкладке
+                    this.blocks[i].hidden = false;
+                }
+            }
+
+            // коллекция всех tab menu на странице
+            const tabsmenu = document.querySelectorAll('.tabsmenu');
+            if (!tabsmenu) return;
+            // перебираем полученную коллекцию
+            for (let menu of tabsmenu) {
+                // создаём экземпляр tab menu
+                const tab = new Tabsmenu(menu);
+            }
+        })();
+
+        /* Script for tabs with containers - End */
+
+    </script>
+
+    <script type="text/javascript">
+
+        /* Script for left-right arrows - Start */
+
+        /* function switchSelect() {
+            let sel = document.getElementById("field");
+            var m = sel.selectedIndex;
+            sel.options[m].selected = true;
+        } */
+
+        let sel = document.getElementById("field");
+        let m = 0;
+        sel.value = '{{ field }}';
+        m = sel.selectedIndex;
+        sel.addEventListener('change', function () {
+            m = sel.selectedIndex;
+            console.log(m)
+        })
+
+        const tabsmenu = document.querySelectorAll('.tabsmenu');
+        if (tabsmenu) {
+            for (let menu of tabsmenu) {
+                const tabs = menu.querySelectorAll('li');
+                const blocks = menu.nextElementSibling.querySelectorAll('.container > div');
+                if (menu.parentElement.classList.contains('hidden')) {
+                    for (let tab of tabs) {
+                        tab.classList.remove('active');
+                    }
+                    tabs[m].classList.add('active');
+                    for (let block of blocks) {
+                        block.hidden = true;
+                    }
+                    blocks[m].hidden = false;
+                }
+            }
+        }
+
+
+        let current = 0;
+        let setNewShown = function (duration) {
+            let elements = document.getElementById('box').getElementsByClassName('select');
+            for (let i = 0; i < elements.length; i++) {
+                if (elements[i].classList.contains('shown')) {
+                    current = i;
+                }
+                elements[i].classList.remove("shown");
+                elements[i].classList.add("hidden");
+            }
+            if (duration === 'up' && current > 0)
+                current--;
+            if (duration === 'start' && current > 0)
+                current = 0;
+            if (duration === 'end' && current < elements.length - 1)
+                current = elements.length - 1;
+            if (duration === 'down' && current < elements.length - 1)
+                current++;
+            elements[current].classList.remove("hidden");
+            elements[current].classList.add("shown");
+
+            const tabsmenu = document.querySelectorAll('.tabsmenu');
+            if (tabsmenu) {
+                for (let menu of tabsmenu) {
+                    const tabs = menu.querySelectorAll('li');
+                    const blocks = menu.nextElementSibling.querySelectorAll('.container > div');
+                    if (menu.parentElement.classList.contains('hidden')) {
+                        for (let tab of tabs) {
+                            tab.classList.remove('active');
+                        }
+                        tabs[m].classList.add('active');
+                        for (let block of blocks) {
+                            block.hidden = true;
+                        }
+                        blocks[m].hidden = false;
+                    }
+                }
+            }
+        }
+
+        /* Script for left-right arrows - End */
+
+    </script>
+
+    <script type="text/javascript">
+
+        /* Script for canvas - Start */
+
+        /* function for canvas itself */
+        (function () {
+            let canvas = document.querySelector('#paint');
+            let ctx = canvas.getContext('2d');
+
+            let sketch = document.querySelector('#sketch');
+            let sketch_style = getComputedStyle(sketch);
+            canvas.width = parseInt(sketch_style.getPropertyValue('width'));
+            canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+
+            let mouse = {x: 0, y: 0};
+            let last_mouse = {x: 0, y: 0};
+
+            /* Mouse Capturing Work */
+            canvas.addEventListener('mousemove', function (e) {
+                last_mouse.x = mouse.x;
+                last_mouse.y = mouse.y;
+
+                mouse.x = e.pageX - this.offsetLeft;
+                mouse.y = e.pageY - this.offsetTop;
+            }, false);
+
+
+            /* Drawing on Paint App */
+            ctx.lineWidth = 4;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'black';
+
+            canvas.addEventListener('mousedown', function (e) {
+                canvas.addEventListener('mousemove', onPaint, false);
+            }, false);
+
+            canvas.addEventListener('mouseup', function () {
+                canvas.removeEventListener('mousemove', onPaint, false);
+            }, false);
+
+            let onPaint = function () {
+                ctx.beginPath();
+                ctx.moveTo(last_mouse.x, last_mouse.y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.closePath();
+                ctx.stroke();
+            };
+        }());
+
+        /* function for erasing */
+        function erase() {
+            let canvas = document.querySelector('#paint');
+            let ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById("canvasimg").style.display = "none";
+        }
+
+        /* Script for canvas - End */
+
+    </script>
+
+    <br><br>
+
+{% endblock %}

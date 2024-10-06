@@ -1,0 +1,32 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_filters %}
+{% load humanize %}
+{% block head %}
+    <style>
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5); /*dim the background*/
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <span style="float: right;">
+</span>
+    <br>
+    <h1>{{ meaning.text }}</h1>
+    <p>
+        ({{ meaning.updated_at|naturaltime }})
+    </p>
+    <br> <br>
+    {% for word in words %}
+        <p><h2><a href="{% url 'cards:word_detail' word.id %}">{{ word.writing }}</a></h2>
+        ({{ word.updated_at|naturaltime }})
+        </p>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_filters %}
+{% load humanize %}
+{% block content %}
+    <h1>Words</h1>
+    <div style="float:right">
+        <!-- https://www.w3schools.com/howto/howto_css_search_button.asp -->
+        {% if user.is_authenticated %}
+            <form>
+                <input type="text" placeholder="Search..." name="search"
+                        {% if search %} value="{{ search }}" {% endif %}
+                >
+                <button type="submit"><i class="fa fa-search"></i></button>
+                <a href="{% url 'cards:all' %}"><i class="fa fa-undo"></i></a>
+            </form>
+            <br><br>
+            Group name &emsp;&emsp; Range &emsp;&emsp;&nbsp;&nbsp;&nbsp;&nbsp; Mix up?
+            <form action="tag_group_words">
+                {% if word_groups %}
+                    <select name="tag_name">
+                        {% for group in word_groups %}
+                            <option value="{{ group.text }}">{{ group.text }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" , value="1" , name="first" , size="2">
+                    -
+                    <input type="text" , value="10000" , name="last" , size="2">
+                    <select name="mix_up">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                    <input type="text" , value="30" , name="show" , size="2">
+                    <button type="submit"><i class="fa fa-check"></i></button>
+                {% else %}
+                    <select name="None">
+                        <option value="None">There are no groups</option>
+                    </select>
+                {% endif %}
+            </form>
+            </div>
+            <p>
+                {% if word_list %}
+                    <ul>
+                        {% for word in word_list %}
+                            <li>
+                                <a href="{% url 'cards:word_detail' word.id %}">{{ word.writing }}</a>
+                                <br>
+                                <small>
+                                    posted
+                                    {{ word.created_at|naturaltime }}
+                                    <br>
+                                    updated
+                                    {{ word.updated_at|naturaltime }}
+                                </small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>There are no words in the database.</p>
+                {% endif %}
+            </p>
+            <p>
+                <a href="{% url 'cards:word_create' %}">Add a Word</a> |
+                <a href="{% url 'logout' %}?next={% url 'cards:all' %}">Logout</a>
+                {% else %}
+            <div style="position: fixed; left: 395px;">
+                <p>You are not authorized to see word lists.</p>
+                | <a href="{% url 'login' %}?next={% url 'cards:all' %}">Login</a> |
+            </div>
+        {% endif %}
+    </p>
+{% endblock %}

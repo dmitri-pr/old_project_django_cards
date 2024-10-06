@@ -1,0 +1,14 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <p>
+    <form action="" method="post" id="upload_form" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Submit">
+        <input type="submit" value="Cancel"
+               onclick="window.location.href='{% url 'cards:word_detail' crosstable.word.id %}'
+                       ;return false;">
+    </form>
+    </p>
+{% endblock %}

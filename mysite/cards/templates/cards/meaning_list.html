@@ -1,0 +1,51 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_filters %}
+{% load humanize %}
+{% block content %}
+    <h1>Meanings</h1>
+    <div style="float:right">
+        {% if user.is_authenticated %}
+            <form>
+                <input type="text" placeholder="Search..." name="search"
+                        {% if search %} value="{{ search }}" {% endif %}
+                >
+                <button type="submit"><i class="fa fa-search"></i></button>
+                <a href="{% url 'cards:meaning_list' %}"><i class="fa fa-undo"></i></a>
+            </form>
+            <br><br>
+            </div>
+            <p>
+                {% if meaning_list %}
+                    <ul>
+                        {% for meaning in meaning_list %}
+                            <li>
+                                <a href="{% url 'cards:meaning_detail' meaning.id %}">{{ meaning.text }}</a>
+                                {% if meaning.owner == user and not meaning.word_set.all %}
+                                    <a href="{% url 'cards:meaning_delete' meaning.id %}"><i
+                                            class="fa fa-trash"></i></a>
+                                {% endif %}
+                                <br>
+                                <small>
+                                    posted
+                                    {{ meaning.created_at|naturaltime }}
+                                    <br>
+                                    updated
+                                    {{ meaning.updated_at|naturaltime }}
+                                </small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>There are no meanings in the database.</p>
+                {% endif %}
+            </p>
+            <p>
+                | <a href="{% url 'logout' %}?next={% url 'cards:meaning_list' %}">Logout</a> |
+                {% else %}
+            <div style="position: fixed; left: 395px;">
+                <p>You are not authorized to see meaning list.</p>
+                | <a href="{% url 'login' %}?next={% url 'cards:meaning_list' %}">Login</a> |
+            </div>
+        {% endif %}
+            </p>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_filters %}
+{% load humanize %}
+{% block head %}
+    <style>
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5); /*dim the background*/
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <span style="float: right;">
+{% if crosstable.username == user.username %}
+    <a href="{% url 'cards:word_meaning_update' crosstable.id %}"><i class="fa fa-pencil"></i></a>
+    <a href="{% url 'cards:word_meaning_delete' crosstable.id %}"><i class="fa fa-trash"></i></a>
+{% endif %}
+</span>
+    <h1><a href="{% url 'cards:meaning_detail' crosstable.meaning.id %}"
+           target="_blank">{{ crosstable.meaning.text }}</a></h1>
+    {% if user.is_authenticated %}
+        <br clear="all"/>
+        <p>
+            {% load crispy_forms_tags %}
+        <form method="post" action="{% url 'cards:word_meaning_comment_create' crosstable.id %}">
+            {% csrf_token %}
+            {{ comment_form|crispy }}
+            <input type="submit" value="Submit">
+            <input type="submit" value="Word"
+                   onclick="window.location.href='{% url 'cards:word_detail' crosstable.word.id %}';return false;">
+        </form>
+        </p>
+    {% endif %}
+    {% for comment in comments %}
+        {{ comment.text }}
+        {% if user == comment.owner %}
+            &emsp;&emsp;&emsp;
+            <a href="{% url 'cards:word_meaning_comment_update' comment.id %}"><i class="fa fa-pencil"></i></a>
+            <a href="{% url 'cards:word_meaning_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
+        {% endif %}
+        </p>
+    {% endfor %}
+{% endblock %}

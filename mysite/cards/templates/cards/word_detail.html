@@ -1,0 +1,79 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_filters %}
+{% load humanize %}
+{% block head %}
+    <style>
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5); /*dim the background*/
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <span style="float: right;">
+({{ word.updated_at|naturaltime }})
+        {% if word.owner == user %}
+            <a href="{% url 'cards:word_update' word.id %}"><i class="fa fa-pencil"></i></a>
+            <a href="{% url 'cards:word_delete' word.id %}"><i class="fa fa-trash"></i></a>
+        {% endif %}
+</span>
+    <br>
+    <h1>{{ word.writing }}</h1>
+    <p>
+    <h1>{{ word.old_writing }}</h1>
+    </p>
+    <br>
+    <p>
+        {{ word.transcription }}
+    </p>
+    <br><br><br>
+    {% if word.tags.all %}
+        <p>
+            <i>Tags:
+                {% for tag in word.tags.all %}
+                    <span style="border:1px grey solid; background-color: LightGreen;">
+      <a href="{% url 'cards:tag_group_words' tag.name 'no' 1 10000 'writing' 10000 %}">{{ tag.name }}</a></span>
+                {% endfor %}
+            </i>
+        </p>
+    {% endif %}
+    <br>
+    <p>
+    </p>
+    {% if user.is_authenticated %}
+        <br clear="all"/>
+        <p>
+            {% load crispy_forms_tags %}
+        <form method="post" action="{% url 'cards:word_meaning_create' word.id %}">
+            {% csrf_token %}
+            {{ meaning_form|crispy }}
+            <input type="submit" value="Submit">
+            <input type="submit" value="All Words" onclick="window.location.href='{% url 'cards:all' %}';return false;">
+        </form>
+        </p>
+    {% endif %}
+    {% for cross_obj, comments in cross_objs_all %}
+        {% if comments %}
+            <p> <a href="{% url 'cards:word_meaning_detail' cross_obj.id %}">{{ cross_obj.meaning.text }}</a>
+            &ensp;
+            ({{ comments }})
+            &emsp;&emsp;&emsp;
+            ({{ cross_obj.meaning.updated_at|naturaltime }})
+        {% else %}
+            <a href="{% url 'cards:word_meaning_detail' cross_obj.id %}">{{ cross_obj.meaning.text }}</a>
+            &emsp;&emsp;&emsp;
+            ({{ cross_obj.meaning.updated_at|naturaltime }})
+        {% endif %}
+    {% if user == cross_obj.meaning.owner %}
+        <a href="{% url 'cards:word_meaning_update' cross_obj.id %}"><i class="fa fa-pencil"></i></a>
+        <a href="{% url 'cards:word_meaning_delete' cross_obj.id %}"><i class="fa fa-trash"></i></a>
+    {% endif %}
+    </p>
+    {% endfor %}
+{% endblock %}
